@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alice Feedback Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: rgb(192, 231, 241);
+            min-height: 100vh;
+        }
+        
+        .hero-img-border {
+            background: linear-gradient(180deg, #fce07a 0%, #f6a1b9 50%, #b3d1f8 100%);
+            padding: 4px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-img-border img {
+            border-radius: 16px;
+            border: 2px solid white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            padding: 32px;
+        }
+
+        .input-light {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            transition: all 0.3s ease;
+        }
+        
+        .input-light:focus {
+            background: #ffffff;
+            border-color: #009485;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 148, 133, 0.1);
+        }
+
+        .input-light::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-glow {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(0, 148, 133, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-glow:active {
+            transform: translateY(1px);
+        }
+        
+        .notification {
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="flex flex-col relative min-h-screen text-[#0f172a]">
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification fixed top-6 left-1/2 -translate-x-1/2 bg-white shadow-xl px-6 py-3 rounded-full flex items-center space-x-3 z-50 border border-gray-100">
+        <svg id="notification-icon" class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span id="notification-message" class="font-medium tracking-wide text-gray-800">Feedback submitted successfully!</span>
+    </div>
+
+
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col items-center justify-start w-full px-4 max-w-2xl mx-auto pt-8 pb-16 relative z-10">
+        
+        <!-- Logo Heading -->
+        <div class="flex justify-center mb-10 w-full">
+            <img src="assets/Screenshot 2026-06-25 at 3.45.31 PM.png" alt="Select ALICE Logo" class="h-16 md:h-20 object-contain">
+        </div>
+
+        <!-- Form Card -->
+        <div class="card w-full">
+            <h2 class="text-2xl font-bold text-center text-[#1e293b] mb-6">Alice feedback</h2>
+            <form id="feedbackForm" class="space-y-5">
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">Your Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Alice Wonderland" 
+                           class="w-full rounded-xl input-light px-4 py-3 text-base">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="alice@example.com" 
+                           class="w-full rounded-xl input-light px-4 py-3 text-base">
+                </div>
+
+
+
+                <div>
+                    <label for="message" class="block text-sm font-semibold text-slate-700 mb-1.5">Your Message</label>
+                    <textarea id="message" name="message" rows="4" required placeholder="Tell us what you think..." 
+                              class="w-full rounded-xl input-light px-4 py-3 text-base resize-none"></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-[#009485] hover:bg-teal-700 text-white font-semibold rounded-xl px-4 py-4 mt-6 btn-glow flex justify-center items-center relative">
+                    <span id="btnText">Submit Feedback</span>
+                    <svg id="loadingIcon" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden absolute" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('feedbackForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const loadingIcon = document.getElementById('loadingIcon');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const notificationIcon = document.getElementById('notification-icon');
+
+        function showNotification(msg, isError = false) {
+            notificationMessage.textContent = msg;
+            
+            if (isError) {
+                notificationIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                notificationIcon.classList.remove('text-green-500');
+                notificationIcon.classList.add('text-red-500');
+            } else {
+                notificationIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                notificationIcon.classList.remove('text-red-500');
+                notificationIcon.classList.add('text-green-500');
+            }
+            
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3500);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI Loading state
+            btnText.classList.add('opacity-0');
+            loadingIcon.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                // Connecting to the backend endpoint on localhost:8000
+                const response = await fetch('http://localhost:8000/alice-feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    showNotification('Feedback submitted successfully!');
+                    form.reset();
+                } else {
+                    showNotification('Failed to submit feedback. Please try again.', true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error connecting to API server. Ensure it is running.', true);
+            } finally {
+                // Revert UI Loading state
+                btnText.classList.remove('opacity-0');
+                loadingIcon.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
